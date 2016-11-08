@@ -1,0 +1,191 @@
+<html class="no-js" lang="en"> <!--<![endif]-->
+    <head>
+        <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+        <script src="/js/artyom.min.js"></script>
+        <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+        <script src="http://malsup.github.io/jquery.blockUI.js"></script>
+        <meta charset="utf-8" />
+        <style type="text/css">
+            .small-chat-box {
+                background: #fff;
+                border: 1px solid #e7eaec;
+                border-radius: 4px;
+            }
+            .small-chat-box .heading {
+                background: #2f4050;
+                padding: 8px 15px;
+                font-weight: bold;
+                color: #fff;
+            }
+            .small-chat-box .chat-date {
+                opacity: 0.6;
+                font-size: 10px;
+                font-weight: normal;
+            }
+            .small-chat-box .content {
+                padding: 15px 15px;
+            }
+            .small-chat-box .content .left {
+                text-align: left;
+                clear: both;
+            }
+            .small-chat-box .content > div {
+                padding-bottom: 20px;
+            }
+            .small-chat-box .content .author-name {
+                font-weight: bold;
+                margin-bottom: 3px;
+                font-size: 16px;
+            }
+            .small-chat-box .chat-date {
+                opacity: 0.6;
+                font-size: 12px;
+                font-weight: normal;
+            }
+            .small-chat-box .content .left .chat-message {
+                float: left;
+            }
+
+            .small-chat-box .content .chat-message.active {
+                background: #1ab394;
+                color: #fff;
+            }
+            .small-chat-box .content .chat-message {
+                padding: 5px 10px;
+                border-radius: 6px;
+                font-size: 14px;
+                line-height: 14px;
+                max-width: 80%;
+                background: #f3f3f4;
+                margin-bottom: 10px;
+                line-height: 25px;
+            }
+            .small-chat-box .content .right {
+                text-align: right;
+                clear: both;
+            }
+            .small-chat-box .content .right .chat-message {
+                float: right;
+            }
+            .small-chat-box .form-chat {
+                padding: 20px 20px;
+            }
+        </style>
+        <script type="text/javascript">
+            function insertMessage(text, name, model = 'left') {
+                if (text === "") return;
+                var msgHtml = '<div class="'+ model +'"><div class="author-name">{{name}}</div><div class="chat-message">{{message}}</div></div>';
+                msgHtml = msgHtml.replace("{{message}}", text);
+                msgHtml = msgHtml.replace("{{name}}", name);                
+                $(".slimScrollDiv .content").append(msgHtml);
+                var e=document.getElementById("slimScrollDiv");
+                e.scrollTop=e.scrollHeight;
+            }
+            
+            function send(text) {
+                insertMessage(text, "您", "right");                    
+                post(text);
+                $('#user-message').val("")
+            }
+
+            function post(text) {
+                if (text === "") {
+                    return ;
+                }
+                $.post(
+                    "http://127.0.0.1:8119/engine/2/airport",
+                    {"text": text },
+                    function(data){
+                        if (data.story !== "") {
+                            insertMessage(data.story, "机器人")
+                            artyom.say(data.story)
+                        }
+                        if (data.question !== "") {
+                            insertMessage(data.question, "机器人")
+                            artyom.say(data.question)                            
+                        }                        
+                    },
+                    "json"
+                );
+           }    
+
+            $(document).ready(function(){
+                artyom.initialize({
+                    lang:"zh-CN",
+                    debug:true, //Show what recognizes in the Console
+                    listen:true, //Start listening after this
+                    speed:0.8, // Talk a little bit slow
+                });     
+
+                insertMessage("请问有什么可以帮您的吗？", "机器人")
+                var userMessage = $('#user-message');
+                var settings = {
+                    continuous:true, // Don't stop never because i have https connection
+                    onResult:function(text){
+                        userMessage.val(text)
+                        console.log(text);
+                    },
+                    onStart:function(){
+                        console.log("Dictation started by the user");
+                    },
+                    onEnd:function(){
+                        console.log("Dictation stopped by the user");
+                    }
+                };
+
+                var UserDictation = artyom.newDictation(settings);      
+                var isDown = false
+                $(document).keydown(function(e){
+                    if (!e) var e = window.event; 
+                    if (e.keyCode == 18 && !isDown) {
+                        userMessage.blur()                        
+                        isDown = true
+                        UserDictation.start();
+                        $.blockUI({
+                            message: '<img src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/static/protocol/https/voice/imgs/start_btn_9eb7d400.png" /><h4 id="luyin">正在语音输入</h4>'});
+                    }
+                 });
+
+                $(document).keyup(function(e){
+                    if (!e) var e = window.event; 
+                    if (e.keyCode == 18) {
+                        isDown = false
+                        UserDictation.stop();
+                        send(userMessage.val());
+                        $.unblockUI();
+                    }
+
+                    if (e.keyCode == 13) {
+                        send(userMessage.val());
+                    }
+                 });
+
+                $("#send-btn").bind('click', function(){
+                });
+                $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+            });
+        </script>
+    </head>
+    <body>
+        <div class = "messager">
+            <dvi class="">
+            <div class="small-chat-box fadeInRight animated active" style="height: 100%;">
+                <div class="heading" draggable="true">
+                    Demo
+                </div>
+                <div class="slimScrollDiv" id="slimScrollDiv" style="overflow-y:auto; width: auto; height: 85%;">
+                    <div class="content" style="overflow-y: auto; width: auto;">
+                    </div>
+                </div>
+                <div class="form-chat">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" placeholder="输入内容"  id="user-message">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" id="send-btn">Send</button>
+                        </span>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </body>
+</html>

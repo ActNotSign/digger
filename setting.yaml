@@ -1,0 +1,13 @@
+segment:
+    host: "http://segment.services.com:6800"
+
+http:
+    host: ":8119"
+    mode: "release"
+
+log:
+    path: "/Users/erwa/code/go/digger/digger.log"
+    mode: "print"
+
+knowledge:
+    - airport

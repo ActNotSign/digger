@@ -1,0 +1,16 @@
+#	type_id question_type	 text
+0	intent	您好，请问您有什么需要吗？
+4	question	我们是按柜子大小和寄存时间收费的，有小、中、大3种柜子可以选择，请问你想存哪种柜子呢？
+5	question	你要存的是行李箱还是其他包裹？
+6	question	行李箱是几寸的？
+7	question	计划存几个小时？
+8	time	now
+9	env	19
+13	question	请问您是要乘坐国内还是国际航班？
+14	question	请问您购买的机票属于哪一家航空公司？
+15	question	请问您的起飞时间？
+18	question	请问您的航班号？
+19	question	请问您的行李体积大概是多少呢？
+20	question	我们有大包装箱和小包装箱，请问您需要哪一种？
+21	question	我们有大包装袋和小包装袋，请问您需要哪一种？
+22	question	请问需办理临时身份证的乘客年龄在以下哪个阶段？（16岁以下；16-59岁；60岁及以上）

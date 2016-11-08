@@ -1,0 +1,8 @@
+#	id  text
+0	intent
+1	question
+2	answer
+3	back
+4	end
+5	env
+6	pwd
