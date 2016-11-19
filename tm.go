@@ -36,7 +36,7 @@ const (
     OPERATOR_LESS_THAN = "<"
     OPERATOR_TEMPLATE = "{*}"
 
-    M_NAME = "\033[31m 机场导航机器人：\033[0m \033[32m"
+    M_NAME = "\033[31m 机器人：\033[0m \033[32m"
     U_NAME = "\033[0m 您："
 
     SIMILARITY_BEFOREHAND_REPLY = .4
